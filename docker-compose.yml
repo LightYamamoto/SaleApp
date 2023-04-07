@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  postgres:
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_USER: nhatnguyen1011997
+      POSTGRES_PASSWORD: 1011997
+      POSTGRES_DB: database
+    volumes:
+      - ./postgres:/var/lib/postgres/
+    ports:
+      - 5434:5432
+
+  python-app:
+    build: ./python-app
+    restart: always
+    volumes:
+    - ./python-app:/python-app
+
+    depends_on:
+      - postgres
+    networks:
+      - app-tier
+
+  # flask:
+  #   build: ./flask
+  #   restart: always
+  #   ports:
+  #     - 5001:5000
+  #   depends_on:
+  #     - postgres_db
+
+  streamlit:
+    build: ./streamlit
+    volumes:
+      - ./streamlit:/streamlit
+    ports:
+      - 8501:8501
+    depends_on:
+      - postgres
+      # - flask
+    networks:
+      - app-tier
+networks:
+  app-tier:
+    driver: bridge
